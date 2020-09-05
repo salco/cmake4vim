@@ -73,11 +73,19 @@ function! utils#cmake#getBuildDir() abort
     return finddir(utils#cmake#detectBuildDir(), getcwd().';.')
 endfunction
 
-function! utils#cmake#getCmakeCache() abort
+function! utils#cmake#projectExists() abort
     let l:cache_file = utils#cmake#getBuildDir() . '/CMakeCache.txt'
     if !filereadable(l:cache_file)
+        return 0
+    endif
+    return 1
+endfunction
+
+function! utils#cmake#getCmakeCache() abort
+    if !utils#cmake#projectExists()
         return []
     endif
+    let l:cache_file = utils#cmake#getBuildDir() . '/CMakeCache.txt'
     if has('win32')
         return split(system('type ' . shellescape(l:cache_file)), '\n')
     else
